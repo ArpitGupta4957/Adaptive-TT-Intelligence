@@ -4,7 +4,7 @@ import { Header, Footer } from '../components/Layout';
 import { PageHeader, Button, Badge, EmptyState } from '../components/ui';
 import { Plus, Pencil, TrendingUp, BookOpen, Award } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import { teacherResponsesApi, trainingMaterialsApi } from '../lib/api';
+import { teacherResponsesApi } from '../lib/api';
 
 interface Submission {
   id: string;
