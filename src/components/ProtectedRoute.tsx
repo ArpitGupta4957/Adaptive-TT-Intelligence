@@ -5,10 +5,9 @@ import { LoadingSpinner } from './ui';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
-  requiredRole?: 'teacher' | 'diet';
 }
 
-export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, requiredRole }) => {
+export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   const { user, loading } = useAuth();
 
   if (loading) {
@@ -17,10 +16,6 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, requir
 
   if (!user) {
     return <Navigate to="/login" replace />;
-  }
-
-  if (requiredRole && user.role !== requiredRole) {
-    return <Navigate to={user.role === 'diet' ? '/diet-dashboard' : '/teacher-dashboard'} replace />;
   }
 
   return <>{children}</>;

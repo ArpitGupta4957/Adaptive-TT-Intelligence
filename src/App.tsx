@@ -4,6 +4,8 @@ import { ProtectedRoute } from './components/ProtectedRoute';
 
 // Pages
 import { LoginPage } from './pages/LoginPage';
+import { AuthCallbackPage } from './pages/AuthCallbackPage';
+import { DashboardRedirect } from './pages/DashboardRedirect';
 import { TeacherDashboard } from './pages/TeacherDashboard';
 import { SubmitNeedPage } from './pages/SubmitNeedPage';
 import { TrainingContentPage } from './pages/TrainingContentPage';
@@ -22,12 +24,13 @@ function App() {
         <Routes>
           {/* Public Routes */}
           <Route path="/login" element={<LoginPage />} />
+          <Route path="/auth/callback" element={<AuthCallbackPage />} />
 
           {/* Teacher Routes */}
           <Route
             path="/teacher-dashboard"
             element={
-              <ProtectedRoute requiredRole="teacher">
+              <ProtectedRoute>
                 <TeacherDashboard />
               </ProtectedRoute>
             }
@@ -35,7 +38,7 @@ function App() {
           <Route
             path="/teacher/submit-need"
             element={
-              <ProtectedRoute requiredRole="teacher">
+              <ProtectedRoute>
                 <SubmitNeedPage />
               </ProtectedRoute>
             }
@@ -43,7 +46,7 @@ function App() {
           <Route
             path="/teacher/training/:id"
             element={
-              <ProtectedRoute requiredRole="teacher">
+              <ProtectedRoute>
                 <TrainingContentPage />
               </ProtectedRoute>
             }
@@ -51,7 +54,7 @@ function App() {
           <Route
             path="/teacher/feedback"
             element={
-              <ProtectedRoute requiredRole="teacher">
+              <ProtectedRoute>
                 <FeedbackPage />
               </ProtectedRoute>
             }
@@ -61,7 +64,7 @@ function App() {
           <Route
             path="/diet-dashboard"
             element={
-              <ProtectedRoute requiredRole="diet">
+              <ProtectedRoute>
                 <DIETDashboard />
               </ProtectedRoute>
             }
@@ -69,7 +72,7 @@ function App() {
           <Route
             path="/diet/cohort/:cohortId"
             element={
-              <ProtectedRoute requiredRole="diet">
+              <ProtectedRoute>
                 <CohortDetailPage />
               </ProtectedRoute>
             }
@@ -77,7 +80,7 @@ function App() {
           <Route
             path="/diet/recommendations/:cohortId"
             element={
-              <ProtectedRoute requiredRole="diet">
+              <ProtectedRoute>
                 <AIRecommendationsPage />
               </ProtectedRoute>
             }
@@ -85,7 +88,7 @@ function App() {
           <Route
             path="/diet/design-training/:cohortId"
             element={
-              <ProtectedRoute requiredRole="diet">
+              <ProtectedRoute>
                 <DesignTrainingPage />
               </ProtectedRoute>
             }
@@ -93,7 +96,7 @@ function App() {
           <Route
             path="/diet/training-published"
             element={
-              <ProtectedRoute requiredRole="diet">
+              <ProtectedRoute>
                 <TrainingPublishedPage />
               </ProtectedRoute>
             }
@@ -101,7 +104,7 @@ function App() {
           <Route
             path="/diet/training-insights"
             element={
-              <ProtectedRoute requiredRole="diet">
+              <ProtectedRoute>
                 <FeedbackInsightsPage />
               </ProtectedRoute>
             }
@@ -109,7 +112,7 @@ function App() {
 
           {/* Root Route */}
           <Route path="/" element={<Navigate to="/login" replace />} />
-          <Route path="/dashboard" element={<Navigate to="/teacher-dashboard" replace />} />
+          <Route path="/dashboard" element={<DashboardRedirect />} />
 
           {/* Catch all */}
           <Route path="*" element={<Navigate to="/" replace />} />

@@ -1,33 +1,10 @@
-// Mock Supabase configuration
-// In production, replace with real Supabase credentials
+// Supabase Configuration for Vite
+// These values come from your Supabase project settings
 
 export const supabaseConfig = {
-  url: import.meta.env.VITE_SUPABASE_URL,
-  anonKey: import.meta.env.VITE_SUPABASE_ANON_KEY,
+  url: import.meta.env.VITE_SUPABASE_URL || 'https://your-project.supabase.co',
+  anonKey: import.meta.env.VITE_SUPABASE_ANON_KEY || 'your-anon-key',
 };
 
-// Mock JWT token storage
-export const tokenStorage = {
-  getToken: () => localStorage.getItem('jwt_token'),
-  setToken: (token: string) => localStorage.setItem('jwt_token', token),
-  clearToken: () => localStorage.removeItem('jwt_token'),
-};
-
-// Mock user session storage
-export const sessionStorage = {
-  getUser: () => {
-    const user = localStorage.getItem('user');
-    return user ? JSON.parse(user) : null;
-  },
-  setUser: (user: any) => localStorage.setItem('user', JSON.stringify(user)),
-  clearUser: () => localStorage.removeItem('user'),
-};
-
-// Helper to simulate API calls with auth headers
-export const createAuthHeaders = () => {
-  const token = tokenStorage.getToken();
-  return {
-    'Content-Type': 'application/json',
-    ...(token && { Authorization: `Bearer ${token}` }),
-  };
-};
+// Note: Supabase client is now initialized in src/lib/api.ts
+// All API calls should use functions from src/lib/api.ts

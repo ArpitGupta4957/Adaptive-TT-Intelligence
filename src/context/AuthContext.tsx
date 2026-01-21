@@ -1,45 +1,69 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import type { User, AuthContextType } from '../types';
-import { tokenStorage, sessionStorage } from '../lib/supabase';
+import { authApi } from '../lib/api';
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+export function useAuth(): AuthContextType {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error('useAuth must be used within AuthProvider');
+  }
+  return context;
+}
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // Initialize auth state from localStorage
+  // Initialize auth state on app load
   useEffect(() => {
-    const storedUser = sessionStorage.getUser();
-    const token = tokenStorage.getToken();
-    
-    if (storedUser && token) {
-      setUser(storedUser);
-    }
-    setLoading(false);
+    const initializeAuth = async () => {
+      try {
+        setLoading(true);
+        const result = await authApi.getCurrentUser();
+        if (result.data) {
+          setUser({
+            id: result.data.user_id?.toString() || '',
+            email: result.data.email,
+            name: result.data.full_name,
+            role: result.data.role as 'teacher' | 'diet',
+            districtId: result.data.district,
+            schoolName: result.data.school_name,
+            schoolCode: result.data.school_id?.toString(),
+            createdAt: result.data.created_at,
+          });
+        }
+      } catch (error) {
+        console.error('Auth initialization error:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    initializeAuth();
   }, []);
 
-  const signInWithGoogle = async () => {
+  const signIn = async (email: string, password: string) => {
     try {
       setLoading(true);
-      // Mock Google OAuth login
-      // In production, integrate with Supabase Auth
-      const mockUser: User = {
-        id: 'user_' + Math.random().toString(36).substr(2, 9),
-        email: 'teacher@example.com',
-        name: 'Sample Teacher',
-        role: 'teacher',
-        districtId: 'DT001',
-        schoolName: 'Government High School',
-        schoolCode: 'GHS001',
-        createdAt: new Date().toISOString(),
-      };
+      const result = await authApi.signIn(email, password);
+      if (result.error) throw result.error;
 
-      const mockToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyXzEyMzQ1IiwiZW1haWwiOiJ0ZWFjaGVyQGV4YW1wbGUuY29tIiwicm9sZSI6InRlYWNoZXIiLCJpYXQiOjE2MzI5NDUwMDB9.signature';
-
-      tokenStorage.setToken(mockToken);
-      sessionStorage.setUser(mockUser);
-      setUser(mockUser);
+      if (result.data && result.data.user) {
+        const userData = result.data.user;
+        const user: User = {
+          id: userData.user_id?.toString() || '',
+          email: userData.email,
+          name: userData.full_name,
+          role: userData.role as 'teacher' | 'diet',
+          districtId: userData.district,
+          schoolName: userData.school_name,
+          schoolCode: userData.school_id?.toString(),
+          createdAt: userData.created_at,
+        };
+        setUser(user);
+      }
     } catch (error) {
       console.error('Sign in error:', error);
       throw error;
@@ -48,25 +72,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const signIn = async (email: string, _password: string) => {
+  const signInWithGoogle = async () => {
     try {
       setLoading(true);
-      // Mock email/password login
-      const mockUser: User = {
-        id: 'user_' + Math.random().toString(36).substr(2, 9),
-        email,
-        name: email.split('@')[0],
-        role: email.includes('diet') ? 'diet' : 'teacher',
-        districtId: 'DT001',
-        createdAt: new Date().toISOString(),
-      };
-
-      const mockToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.token';
-      tokenStorage.setToken(mockToken);
-      sessionStorage.setUser(mockUser);
-      setUser(mockUser);
+      const result = await authApi.signInWithGoogle();
+      if (result.error) throw result.error;
+      // Note: Google sign-in will redirect, so additional logic may be needed
     } catch (error) {
-      console.error('Sign in error:', error);
+      console.error('Google sign in error:', error);
       throw error;
     } finally {
       setLoading(false);
@@ -76,8 +89,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const signOut = async () => {
     try {
       setLoading(true);
-      tokenStorage.clearToken();
-      sessionStorage.clearUser();
+      const result = await authApi.signOut();
+      if (result.error) throw result.error;
       setUser(null);
     } catch (error) {
       console.error('Sign out error:', error);
@@ -101,12 +114,4 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       {children}
     </AuthContext.Provider>
   );
-};
-
-export const useAuth = (): AuthContextType => {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error('useAuth must be used within AuthProvider');
-  }
-  return context;
 };

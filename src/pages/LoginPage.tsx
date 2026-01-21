@@ -19,7 +19,7 @@ export const LoginPage: React.FC = () => {
 
     try {
       await signIn(email, password);
-      navigate('/dashboard');
+      navigate('/teacher-dashboard');
     } catch (err) {
       setError('Invalid email or password');
     } finally {
@@ -33,9 +33,12 @@ export const LoginPage: React.FC = () => {
 
     try {
       await signInWithGoogle();
-      navigate('/dashboard');
-    } catch (err) {
-      setError('Failed to sign in with Google');
+      // Google OAuth will handle redirect via Supabase settings
+      // No need to navigate here as OAuth redirects automatically
+    } catch (err: any) {
+      const errorMessage = err?.message || 'Failed to sign in with Google';
+      setError(errorMessage);
+      console.error('Google sign-in error:', err);
     } finally {
       setLoading(false);
     }
