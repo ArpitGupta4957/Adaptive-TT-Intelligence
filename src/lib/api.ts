@@ -139,20 +139,26 @@ export const authApi = {
       if (error) throw error;
 
       if (user) {
-        // Fetch user profile from users table
-        const { data: userData, error: userError } = await supabase
-          .from('users')
-          .select('*')
-          .eq('user_id', user.id)
-          .single();
-
-        if (userError) throw userError;
-
-        return { data: userData, error: null };
+        // Return auth user directly - no need to query users table for initial load
+        // This avoids 400 errors from malformed queries
+        return { 
+          data: {
+            user_id: user.id,
+            email: user.email,
+            full_name: user.user_metadata?.full_name || '',
+            role: user.user_metadata?.role || 'teacher',
+            district: user.user_metadata?.district || 'TBD',
+            school_name: user.user_metadata?.school_name || '',
+            school_id: user.user_metadata?.school_id,
+            created_at: user.created_at,
+          }, 
+          error: null 
+        };
       }
 
       return { data: null, error: null };
     } catch (error) {
+      console.error('getCurrentUser error:', error);
       return { data: null, error };
     }
   },
