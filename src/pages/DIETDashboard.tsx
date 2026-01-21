@@ -42,19 +42,6 @@ export const DIETDashboard: React.FC = () => {
     },
   ]);
 
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case 'published':
-        return <CheckCircle size={16} className="text-green-600" />;
-      case 'approved':
-        return <CheckCircle size={16} className="text-blue-600" />;
-      case 'recommendations':
-        return <Brain size={16} className="text-orange-600" />;
-      default:
-        return <BarChart3 size={16} className="text-gray-600" />;
-    }
-  };
-
   const getStatusBadgeType = (status: string): 'success' | 'warning' | 'info' | 'default' => {
     switch (status) {
       case 'published':

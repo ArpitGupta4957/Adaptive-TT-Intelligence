@@ -19,8 +19,6 @@ export const TeacherDashboard: React.FC = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [submissions, setSubmissions] = useState<Submission[]>([]);
-  const [trainingPrograms, setTrainingPrograms] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
 
   // Fetch submissions and training programs
   useEffect(() => {
@@ -28,8 +26,6 @@ export const TeacherDashboard: React.FC = () => {
       if (!user?.id) return;
 
       try {
-        setLoading(true);
-
         // Fetch teacher responses (submissions)
         const responsesRes = await teacherResponsesApi.getTeacherResponses(parseInt(user.id));
         if (responsesRes.data) {
@@ -43,32 +39,13 @@ export const TeacherDashboard: React.FC = () => {
           }));
           setSubmissions(formattedSubmissions);
         }
-
-        // Fetch training materials
-        const materialsRes = await trainingMaterialsApi.getMaterialsByUser(parseInt(user.id));
-        if (materialsRes.data) {
-          setTrainingPrograms(materialsRes.data);
-        }
       } catch (error) {
         console.error('Error fetching dashboard data:', error);
-      } finally {
-        setLoading(false);
       }
     };
 
     fetchData();
   }, [user]);
-
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case 'submitted':
-        return <Send size={16} />;
-      case 'reviewed':
-        return <CheckCircle size={16} />;
-      default:
-        return <AlertCircle size={16} />;
-    }
-  };
 
   const getStatusBadgeType = (status: string): 'success' | 'warning' | 'info' | 'default' => {
     switch (status) {

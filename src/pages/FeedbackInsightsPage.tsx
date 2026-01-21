@@ -4,8 +4,6 @@ import { PageHeader, Card, Badge } from '../components/ui';
 import { TrendingUp, Users, Award, MessageSquare } from 'lucide-react';
 
 export const FeedbackInsightsPage: React.FC = () => {
-  const navigate = useNavigate();
-
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       <Header />
