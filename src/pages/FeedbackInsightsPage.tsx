@@ -1,5 +1,4 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
 import { Header, Footer } from '../components/Layout';
 import { PageHeader, Card, Badge } from '../components/ui';
 import { TrendingUp, Users, Award, MessageSquare } from 'lucide-react';

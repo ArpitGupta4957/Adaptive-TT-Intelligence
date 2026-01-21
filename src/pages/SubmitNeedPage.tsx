@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Header, Footer } from '../components/Layout';
-import { PageHeader, Button, FormField } from '../components/ui';
-import { ArrowLeft, Check, Lightbulb, Users, BookOpen, AlertCircle } from 'lucide-react';
+import { Button } from '../components/ui';
+import { ArrowLeft, Check, Lightbulb, Users, AlertCircle } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { teacherResponsesApi } from '../lib/api';
 

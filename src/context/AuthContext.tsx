@@ -25,13 +25,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         if (result.data) {
           setUser({
             id: result.data.user_id?.toString() || '',
-            email: result.data.email,
-            name: result.data.full_name,
-            role: result.data.role as 'teacher' | 'diet',
-            districtId: result.data.district,
-            schoolName: result.data.school_name,
-            schoolCode: result.data.school_id?.toString(),
-            createdAt: result.data.created_at,
+            email: result.data.email || '',
+            name: result.data.full_name || '',
+            role: (result.data.role as 'teacher' | 'diet') || 'teacher',
+            districtId: result.data.district || '',
+            schoolName: result.data.school_name || '',
+            schoolCode: result.data.school_id?.toString() || '',
+            createdAt: result.data.created_at || '',
           });
         }
       } catch (error) {

@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Header, Footer } from '../components/Layout';
-import { PageHeader, Button, Badge } from '../components/ui';
+import { Button, Badge } from '../components/ui';
 import { ArrowLeft, Clock, Users, BookOpen, CheckCircle, Award, CalendarDays, User, Video, Download } from 'lucide-react';
 
 export const TrainingContentPage: React.FC = () => {

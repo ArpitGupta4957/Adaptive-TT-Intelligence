@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Header, Footer } from '../components/Layout';
 import { PageHeader, Button, Badge, EmptyState } from '../components/ui';
-import { Plus, Pencil, Send, CheckCircle, AlertCircle, TrendingUp, BookOpen, Award } from 'lucide-react';
+import { Plus, Pencil, TrendingUp, BookOpen, Award } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { teacherResponsesApi, trainingMaterialsApi } from '../lib/api';
 
