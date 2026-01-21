@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Header, Footer } from '../components/Layout';
-import { PageHeader, Button, Card, Badge, EmptyState } from '../components/ui';
+import { PageHeader, Button, Badge, EmptyState } from '../components/ui';
 import { Plus, Pencil, Send, CheckCircle, AlertCircle, TrendingUp, BookOpen, Award } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
+import { teacherResponsesApi, trainingMaterialsApi } from '../lib/api';
 
 interface Submission {
   id: string;
@@ -15,23 +17,47 @@ interface Submission {
 
 export const TeacherDashboard: React.FC = () => {
   const navigate = useNavigate();
-  const [submissions, setSubmissions] = useState<Submission[]>([
-    {
-      id: '1',
-      title: 'Difficulty with Mathematics Problem-Solving Approach',
-      subject: 'Mathematics',
-      status: 'submitted',
-      submittedAt: '2024-01-10',
-      lastModified: '2024-01-10',
-    },
-    {
-      id: '2',
-      title: 'English Language Composition Skills',
-      subject: 'English',
-      status: 'draft',
-      lastModified: '2024-01-12',
-    },
-  ]);
+  const { user } = useAuth();
+  const [submissions, setSubmissions] = useState<Submission[]>([]);
+  const [trainingPrograms, setTrainingPrograms] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  // Fetch submissions and training programs
+  useEffect(() => {
+    const fetchData = async () => {
+      if (!user?.id) return;
+
+      try {
+        setLoading(true);
+
+        // Fetch teacher responses (submissions)
+        const responsesRes = await teacherResponsesApi.getTeacherResponses(parseInt(user.id));
+        if (responsesRes.data) {
+          const formattedSubmissions = responsesRes.data.map((response: any) => ({
+            id: response.response_id?.toString() || '',
+            title: response.responses?.title || 'Untitled',
+            subject: response.responses?.subject || 'General',
+            status: response.responses?.status || 'submitted',
+            submittedAt: response.submitted_at,
+            lastModified: response.submitted_at,
+          }));
+          setSubmissions(formattedSubmissions);
+        }
+
+        // Fetch training materials
+        const materialsRes = await trainingMaterialsApi.getMaterialsByUser(parseInt(user.id));
+        if (materialsRes.data) {
+          setTrainingPrograms(materialsRes.data);
+        }
+      } catch (error) {
+        console.error('Error fetching dashboard data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [user]);
 
   const getStatusIcon = (status: string) => {
     switch (status) {

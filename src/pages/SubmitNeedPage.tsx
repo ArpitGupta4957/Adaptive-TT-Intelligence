@@ -3,11 +3,15 @@ import { useNavigate } from 'react-router-dom';
 import { Header, Footer } from '../components/Layout';
 import { PageHeader, Button, FormField } from '../components/ui';
 import { ArrowLeft, Check, Lightbulb, Users, BookOpen, AlertCircle } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
+import { teacherResponsesApi } from '../lib/api';
 
 export const SubmitNeedPage: React.FC = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
   const [formData, setFormData] = useState({
     title: '',
     subject: '',
@@ -25,13 +29,37 @@ export const SubmitNeedPage: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError('');
     setLoading(true);
 
-    // Simulate API call
-    setTimeout(() => {
-      setLoading(false);
+    try {
+      if (!user?.id) {
+        throw new Error('User not authenticated');
+      }
+
+      // Save to database
+      const response = await teacherResponsesApi.createResponse(parseInt(user.id), {
+        title: formData.title,
+        subject: formData.subject,
+        gradeLevel: formData.gradeLevel,
+        studentCount: parseInt(formData.studentCount),
+        challenge: formData.challenge,
+        context: formData.context,
+        constraints: formData.constraints,
+        status: 'submitted',
+      });
+
+      if (response.error) {
+        throw response.error;
+      }
+
       setSubmitted(true);
-    }, 1500);
+    } catch (err: any) {
+      setError(err.message || 'Failed to submit need. Please try again.');
+      console.error('Submit error:', err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   if (submitted) {
@@ -178,6 +206,11 @@ export const SubmitNeedPage: React.FC = () => {
 
             {/* Form Card */}
             <div className="bg-white border border-gray-200 rounded-xl p-8 shadow-sm">
+              {error && (
+                <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+                  <p className="text-red-700 text-sm font-medium">{error}</p>
+                </div>
+              )}
               <form onSubmit={handleSubmit} className="space-y-8">
                 {/* Subject & Grade Level */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
